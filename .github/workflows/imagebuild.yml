@@ -17,6 +17,7 @@ on:
         type: string
 env:
   AWS_REGION: us-east-1
+  ECR_REPOSITORY: ${{ inputs.ECR_REPOSITORY }}
   ECS_TASK_DEFINITION: ${{ inputs.ECS_TASK_DEFINITION }}
   CONTAINER_NAME: ${{ inputs.CONTAINER_NAME }}
   
@@ -25,19 +26,19 @@ permissions:
   contents: read # This is required for actions/checkout@v2
 
 jobs:
-  build:
-    name: Build Image
+  deploy:
+    name: Build Image & deploy to task definition
     runs-on: ubuntu-latest
     
     steps:
-    - name: Check out code
+    - name: Checkout
       uses: actions/checkout@v3
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
         role-to-assume: arn:aws:iam::875617876901:role/github-deploy
         role-session-name: github-deploy
-        aws-region: us-east-1
+        aws-region: ${{ env.AWS_REGION }}
         audience: sts.amazonaws.com
 
     - name: Login to Amazon ECR
@@ -48,7 +49,6 @@ jobs:
       id: build-image
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        ECR_REPOSITORY: my-repo
         IMAGE_TAG: ${{ github.sha }}
       run: |
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
