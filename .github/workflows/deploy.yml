@@ -1,0 +1,32 @@
+name: Deploy ECS Cluster using cloud formation
+
+on:
+  workflow_dispatch:
+  
+env:
+  AWS_REGION: us-east-1                   
+  
+permissions:
+  id-token: write
+  contents: read # This is required for actions/checkout@v2
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        role-to-assume: arn:aws:iam::875617876901:role/github-deploy
+        role-session-name: github-deploy
+        aws-region: ${{ env.AWS_REGION }}
+        audience: sts.amazonaws.com
+        
+      - name: Deploy to AWS CloudFormation
+        uses: aws-actions/aws-cloudformation-github-deploy@v1
+        with:
+          name: ecs-deploy2
+          template: template.yml
