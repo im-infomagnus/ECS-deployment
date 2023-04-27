@@ -3,7 +3,7 @@
     "containerDefinitions": [
         {
             "name": "ecr-deploy",
-            "image": "875617876901.dkr.ecr.us-east-1.amazonaws.com/my-repo",
+            "image": "875617876901.dkr.ecr.us-east-1.amazonaws.com/my-repo:latest",
             "cpu": 0,
             "portMappings": [
                 {
