@@ -1,0 +1,76 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: The template used to create an ECS Service from the ECS Console.
+Parameters:
+  ECSClusterName:
+    Type: String
+    Default: ecs-deploy2
+  SecurityGroupIDs:
+    Type: CommaDelimitedList
+    Default: sg-ab60ae8f
+  SubnetIDs:
+    Type: CommaDelimitedList
+    Default: >-
+      subnet-eff169a2,subnet-e9e3ffd7,subnet-c5b230cb,subnet-5a3ef73c,subnet-7627f057,subnet-f6ba6fa9
+  VpcID:
+    Type: String
+    Default: vpc-1b48ad66
+  LoadBalancerName:
+    Type: String
+    Default: ''
+Resources:
+  ECSCluster:
+    Type: 'AWS::ECS::Cluster'
+    Properties:
+      ClusterName: ecs-deploy2
+      CapacityProviders:
+        - FARGATE
+        - FARGATE_SPOT
+      ClusterSettings:
+        - Name: containerInsights
+          Value: disabled
+      Configuration:
+        ExecuteCommandConfiguration:
+          Logging: DEFAULT
+      ServiceConnectDefaults:
+        Namespace: ecs-deploy
+      Tags: []
+  ECSService:
+    Type: 'AWS::ECS::Service'
+    Properties:
+      Cluster: ecs-deploy2
+      CapacityProviderStrategy:
+        - CapacityProvider: FARGATE
+          Base: 0
+          Weight: 1
+      TaskDefinition: 'arn:aws:ecs:us-east-1:875617876901:task-definition/ecr-deploy:1'
+      ServiceName: ecs-deploy2
+      SchedulingStrategy: REPLICA
+      DesiredCount: 1
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: ENABLED
+          SecurityGroups: !Ref SecurityGroupIDs
+          Subnets: !Ref SubnetIDs
+      PlatformVersion: LATEST
+      DeploymentConfiguration:
+        MaximumPercent: 200
+        MinimumHealthyPercent: 100
+        DeploymentCircuitBreaker:
+          Enable: true
+          Rollback: true
+      DeploymentController:
+        Type: ECS
+      ServiceConnectConfiguration:
+        Enabled: false
+      Tags: []
+      EnableECSManagedTags: true
+Outputs:
+  ECSCluster:
+    Description: The created cluster.
+    Value: !Ref ECSCluster
+  ClusterName:
+    Description: The cluster used to create the service.
+    Value: !Ref ECSClusterName
+  ECSService:
+    Description: The created service.
+    Value: !Ref ECSService
