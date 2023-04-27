@@ -2,6 +2,23 @@ name: Build and push image to ECR
 
 on:
   workflow_dispatch:
+    inputs:
+      ECR_REPOSITORY:
+        description: 'Enter the ECR_REPOSITORY'
+        required: true
+        type: string
+      ECS_TASK_DEFINITION:
+        type: string
+        description: 'Enter the ECS_TASK_DEFINITION'
+        required: true
+      CONTAINER_NAME:
+        description: 'Enter the CONTAINER_NAME'
+        required: true		
+        type: string
+env:
+  AWS_REGION: us-east-1
+  ECS_TASK_DEFINITION: ${{ inputs.ECS_TASK_DEFINITION }}
+  CONTAINER_NAME: ${{ inputs.CONTAINER_NAME }}
   
 permissions:
   id-token: write
@@ -40,6 +57,6 @@ jobs:
       id: task-def
       uses: aws-actions/amazon-ecs-render-task-definition@v1
       with:
-        task-definition: ecr-deploy
-        container-name: ecr-deploy
+        task-definition: ${{ env.ECS_TASK_DEFINITION }}
+        container-name: ${{ env.CONTAINER_NAME }}
         image: ${{ steps.build-image.outputs.image }}
