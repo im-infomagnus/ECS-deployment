@@ -25,8 +25,8 @@ jobs:
         aws-region: ${{ env.AWS_REGION }}
         audience: sts.amazonaws.com
         
-      - name: Deploy to AWS CloudFormation
-        uses: aws-actions/aws-cloudformation-github-deploy@v1
-        with:
-          name: ecs-deploy2
-          template: template.yml
+    - name: Deploy to AWS CloudFormation
+      uses: aws-actions/aws-cloudformation-github-deploy@v1
+      with:
+        name: ecs-deploy2
+        template: template.yml
