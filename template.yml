@@ -42,7 +42,7 @@ Resources:
         - CapacityProvider: FARGATE
           Base: 0
           Weight: 1
-      TaskDefinition: 'arn:aws:ecs:us-east-1:875617876901:task-definition/ecr-deploy:latest'
+      TaskDefinition: 'arn:aws:ecs:us-east-1:875617876901:task-definition/ecr-deploy:3'
       ServiceName: ecs-deploy2
       SchedulingStrategy: REPLICA
       DesiredCount: 1
